@@ -1,18 +1,18 @@
-import {View, Text, shadowOpacity, Image} from 'react-native';
-import React, {useState, useEffect} from 'react';
+import { View, Text, shadowOpacity, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
 
-import {GiftedChat, Bubble, InputToolbar} from 'react-native-gifted-chat';
+import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat';
 
 import firestore from '@react-native-firebase/firestore';
-import {launchImageLibrary} from 'react-native-image-picker';
+import { launchImageLibrary } from 'react-native-image-picker';
 import storage from '@react-native-firebase/storage';
 import ImgToBase64 from 'react-native-image-base64';
 
-export default function ChatScreen({user, route}) {
+export default function ChatScreen({ user, route }) {
   const [messages, setMessages] = useState([]);
-  const {uid} = route.params;
+  const { uid } = route.params;
   const [profile, setProfile] = useState('');
-  
+
 
   useEffect(() => {
     firestore()
@@ -81,7 +81,7 @@ export default function ChatScreen({user, route}) {
       .collection('chatrooms')
       .doc(docid)
       .collection('messages')
-      .add({...mymsg, createdAt: firestore.FieldValue.serverTimestamp()});
+      .add({ ...mymsg, createdAt: firestore.FieldValue.serverTimestamp() });
   };
   const sendNoti = () => {
     firestore()
@@ -122,7 +122,7 @@ export default function ChatScreen({user, route}) {
             .collection('chatrooms')
             .doc(docid)
             .collection('messages')
-            .add({...mymsg, createdAt: firestore.FieldValue.serverTimestamp()});
+            .add({ ...mymsg, createdAt: firestore.FieldValue.serverTimestamp() });
         })
         .catch(err => {
           err;
@@ -135,7 +135,7 @@ export default function ChatScreen({user, route}) {
   const pickImageAndUpload = () => {
     ImagePicker.showImagePicker(options, (response) => {
       console.log('Response = ', response);
-    
+
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.error) {
@@ -149,11 +149,11 @@ export default function ChatScreen({user, route}) {
         setImageSource(response.uri);
       }
     });
-  
+
   };
 
   return (
-    <View style={{flex: 1, backgroundColor: '#f5f5f5'}}>
+    <View style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
       <View>
         <Image
           style={{
@@ -166,7 +166,7 @@ export default function ChatScreen({user, route}) {
             borderColor: 'purple',
             backgroundColor: 'white',
           }}
-          source={{uri: profile.pic}}
+          source={{ uri: profile.pic }}
         />
       </View>
       <GiftedChat
@@ -198,8 +198,8 @@ export default function ChatScreen({user, route}) {
           return (
             <InputToolbar
               {...props}
-              containerStyle={{borderTopWidth: 1, borderTopColor: 'purple'}}
-              textInputStyle={{color: 'black'}}
+              containerStyle={{ borderTopWidth: 1, borderTopColor: 'purple' }}
+              textInputStyle={{ color: 'black' }}
               onPressActionButton={() => pickImageAndUpload()}
             />
           );

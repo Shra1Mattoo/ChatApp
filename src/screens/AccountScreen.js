@@ -6,15 +6,15 @@ import {
   Image,
   ScrollView,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Feather from 'react-native-vector-icons/Feather';
-import {Button} from 'react-native-paper';
+import { Button } from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import * as Animatable from 'react-native-animatable';
 
-export default function AccountScreen({user}) {
+export default function AccountScreen({ user }) {
   const [profile, setProfile] = useState('');
 
   useEffect(() => {
@@ -37,10 +37,10 @@ export default function AccountScreen({user}) {
     <ScrollView>
       <View style={styles.container}>
         <View>
-          <Image style={styles.img} source={{uri: profile.pic}} />
+          <Image style={styles.img} source={{ uri: profile.pic }} />
         </View>
         <Animatable.View animation="fadeIn" style={styles.container2}>
-          <View style={{flexDirection: 'row'}}>
+          <View style={{ flexDirection: 'row' }}>
             <Feather
               name="user"
               size={30}
@@ -49,14 +49,14 @@ export default function AccountScreen({user}) {
             />
             <Text style={styles.text}> Name - {profile.name}</Text>
           </View>
-          <View style={{flexDirection: 'row'}}>
+          <View style={{ flexDirection: 'row' }}>
             <Feather
               name="mail"
               size={30}
               color={'white'}
               style={styles.icon}
             />
-            <Text style={[styles.text2, {marginLeft: 10}]}>
+            <Text style={[styles.text2, { marginLeft: 10 }]}>
               {profile.email}
             </Text>
           </View>
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
   },
   icon2: {
     marginTop: 54,
-    marginRight:5,
+    marginRight: 5,
   },
   img: {
     marginTop: 50,
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     letterSpacing: 3,
     marginTop: 50,
     padding: 4,
-    marginRight:38,
+    marginRight: 38,
   },
   text2: {
     fontSize: 21,

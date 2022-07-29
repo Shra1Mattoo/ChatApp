@@ -6,12 +6,12 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import firestore from '@react-native-firebase/firestore';
 
-import {FAB} from 'react-native-paper';
+import { FAB } from 'react-native-paper';
 
-export default function HomeScreen({user, navigation}) {
+export default function HomeScreen({ user, navigation }) {
   const [users, setUsers] = useState(null);
 
   const getUsers = async () => {
@@ -29,14 +29,14 @@ export default function HomeScreen({user, navigation}) {
     getUsers();
   }, []);
 
-  const RenderCard = ({item}) => {
+  const RenderCard = ({ item }) => {
     return (
       <TouchableOpacity
         onPress={() =>
-          navigation.navigate('chat', {name: item.name, uid: item.uid})
+          navigation.navigate('chat', { name: item.name, uid: item.uid })
         }>
         <View style={styles.mycard}>
-          <Image source={{uri: item.pic}} style={styles.img} />
+          <Image source={{ uri: item.pic }} style={styles.img} />
 
           <View>
             <Text style={styles.text}>{item.name}</Text>
@@ -48,10 +48,10 @@ export default function HomeScreen({user, navigation}) {
   };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <FlatList
         data={users}
-        renderItem={({item}) => {
+        renderItem={({ item }) => {
           return <RenderCard item={item} />;
         }}
         keyExtractor={item => item.uid}
