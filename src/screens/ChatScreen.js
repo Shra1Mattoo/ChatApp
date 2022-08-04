@@ -12,26 +12,18 @@ export default function ChatScreen({ user, route }) {
   const [messages, setMessages] = useState([]);
   const { uid } = route.params;
   const [profile, setProfile] = useState('');
+  const [image, setImage] = useState('');
 
 
   useEffect(() => {
     firestore()
       .collection('users')
-      .doc(user.uid)
+      .doc(uid)
       .get()
       .then(docSnap => {
         setProfile(docSnap.data());
       });
   }, []);
-  const getAllMessages = async () => {
-    const allmsg = querySanp.docs.map(docSnap => {
-      return {
-        ...docSnap.data(),
-        createdAt: docSnap.data().createdAt.toDate(),
-      };
-    });
-    setMessages(allmsg);
-  };
 
   useEffect(() => {
     // getAllMessages();
@@ -65,7 +57,40 @@ export default function ChatScreen({ user, route }) {
     };
   }, []);
 
+  // const getAllMessages = async () => {
+  //   const allmsg = querySanp.docs.map(docSnap => {
+  //     return {
+  //       ...docSnap.data(),
+  //       createdAt: docSnap.data().createdAt.toDate(),
+  //     };
+  //   });
+  //   setMessages(allmsg);
+  // };
+
+
   const onSend = messageArray => {
+    sendNoti();
+
+    const msg = messageArray[0];
+    console.log("My message", messageArray)
+
+    const mymsg = {
+      ...msg,
+      sentBy: user.uid,
+      sentTo: uid,
+      createdAt: new Date(),
+
+    };
+    setMessages(previousMessages => GiftedChat.append(previousMessages, mymsg));
+    const docid = uid > user.uid ? user.uid + '-' + uid : uid + '-' + user.uid;
+
+    firestore()
+      .collection('chatrooms')
+      .doc(docid)
+      .collection('messages')
+      .add({ ...mymsg, createdAt: firestore.FieldValue.serverTimestamp() });
+  };
+  const imageSender = messageArray => {
     sendNoti();
     const msg = messageArray[0];
     const mymsg = {
@@ -74,7 +99,7 @@ export default function ChatScreen({ user, route }) {
       sentTo: uid,
       createdAt: new Date(),
     };
-    setMessages(previousMessages => GiftedChat.append(previousMessages, mymsg));
+    setMessages(previousMessages => GiftedChat.append(previousMessages, mymsg, source));
     const docid = uid > user.uid ? user.uid + '-' + uid : uid + '-' + user.uid;
 
     firestore()
@@ -108,24 +133,28 @@ export default function ChatScreen({ user, route }) {
   /////////////////open gallery/////////////
   const openGallery = () => {
     launchImageLibrary('photo', response => {
+      console.warn("On open gallery ", response)
       ImgToBase64.getBase64String(response.assets[0].uri)
         .then(async base64String => {
-          const uid = await AsyncStorage.getItem('UID');
+
           let source = 'data:image/jpeg;base64,' + base64String;
-          setMessages(previousMessages =>
-            GiftedChat.append(previousMessages, mymsg, source),
-          );
-          const docid =
-            uid > user.uid ? user.uid + '-' + uid : uid + '-' + user.uid;
+          const msg = source;
+          const mymsg = {
+            ...msg,
+            sentBy: user.uid,
+            sentTo: uid,
+            createdAt: new Date(),
+          };
+          setMessages(previousMessages => GiftedChat.append(previousMessages, mymsg, source));
+          const docid = uid > user.uid ? user.uid + '-' + uid : uid + '-' + user.uid;
 
           firestore()
             .collection('chatrooms')
             .doc(docid)
             .collection('messages')
             .add({ ...mymsg, createdAt: firestore.FieldValue.serverTimestamp() });
-        })
-        .catch(err => {
-          err;
+
+
         });
     });
   };
@@ -171,6 +200,10 @@ export default function ChatScreen({ user, route }) {
       </View>
       <GiftedChat
         messages={messages}
+        // showAvatarForEveryMessage={true}
+        showUserAvatar={true}
+        isTyping={true}
+        alwaysShowSend={true}
         onSend={text => onSend(text)}
         user={{
           _id: user.uid,
@@ -200,7 +233,7 @@ export default function ChatScreen({ user, route }) {
               {...props}
               containerStyle={{ borderTopWidth: 1, borderTopColor: 'purple' }}
               textInputStyle={{ color: 'black' }}
-              onPressActionButton={() => pickImageAndUpload()}
+              onPressActionButton={() => openGallery()}
             />
           );
         }}

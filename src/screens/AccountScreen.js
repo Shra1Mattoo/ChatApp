@@ -34,51 +34,55 @@ export default function AccountScreen({ user }) {
   }
 
   return (
-    <ScrollView>
+    <ScrollView scrollEnabled={false}>
       <View style={styles.container}>
-        <View>
-          <Image style={styles.img} source={{ uri: profile.pic }} />
-        </View>
-        <Animatable.View animation="fadeIn" style={styles.container2}>
-          <View style={{ flexDirection: 'row' }}>
-            <Feather
-              name="user"
-              size={30}
-              color={'white'}
-              style={styles.icon2}
-            />
-            <Text style={styles.text}> Name - {profile.name}</Text>
-          </View>
-          <View style={{ flexDirection: 'row' }}>
-            <Feather
-              name="mail"
-              size={30}
-              color={'white'}
-              style={styles.icon}
-            />
-            <Text style={[styles.text2, { marginLeft: 10 }]}>
-              {profile.email}
-            </Text>
-          </View>
-          <Button
-            style={styles.btn}
-            mode="contained"
-            onPress={() => {
-              firestore()
-                .collection('users')
-                .doc(user.uid)
-                .update({
-                  status: firestore.FieldValue.serverTimestamp(),
-                })
-                .then(() => {
-                  auth().signOut();
-                });
-            }}>
-            Logout
-          </Button>
-        </Animatable.View>
+
+        <Image style={styles.img} source={{ uri: profile.pic }} />
       </View>
-    </ScrollView>
+      <Animatable.View animation="fadeIn" style={styles.container2}>
+        <View style={{ borderRadius: 10, paddingHorizontal: '4%', borderColor: 'white', borderWidth: 3, alignContent: 'center', height: '20%', flexDirection: 'row' }}>
+          <Feather
+            name="user"
+            size={30}
+            color={'white'}
+            style={styles.icon2}
+          />
+          <Text style={styles.text}> Name:{profile.name}</Text>
+        </View>
+        <View style={{ height: '1%' }}></View>
+        <View style={{ width: '100%', paddingHorizontal: '4%', borderRadius: 10, borderColor: 'white', borderWidth: 3, alignContent: 'center', height: '20%', flexDirection: 'row' }}>
+          <Feather
+            name="mail"
+            size={30}
+            color={'white'}
+            style={styles.icon}
+          />
+          <Text style={[styles.text2]}>
+            {profile.email}
+          </Text>
+        </View>
+        <View style={{ height: '20%' }}></View>
+
+        <Button
+          style={styles.btn}
+          mode="contained"
+          onPress={() => {
+            firestore()
+              .collection('users')
+              .doc(user.uid)
+              .update({
+                status: firestore.FieldValue.serverTimestamp(),
+              })
+              .then(() => {
+                auth().signOut();
+              });
+          }}>
+          Logout
+        </Button>
+
+      </Animatable.View>
+
+    </ScrollView >
   );
 }
 const styles = StyleSheet.create({
@@ -88,59 +92,68 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   container: {
-    flex: 1,
-    backgroundColor: 'white',
+
     alignItems: 'center',
+
+
   },
   container2: {
-    flex: 1,
-    marginTop: 10,
-    backgroundColor: 'purple',
-    width: '98%',
-    borderRadius: 60,
-    alignItems: 'center',
+    borderRadius: 20,
+    height: '80%',
+    paddingHorizontal: '1%',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(128,0,128, 0.6)',
+    shadowOpacity: 1
+
+
   },
   icon: {
-    marginTop: 35,
+    alignSelf: 'center'
   },
   icon2: {
-    marginTop: 54,
-    marginRight: 5,
+
+    alignSelf: 'center'
   },
   img: {
-    marginTop: 50,
+    marginTop: 10,
+    marginBottom: 10,
     width: 300,
     height: 300,
     borderRadius: 150,
     borderWidth: 3,
-    borderColor: 'purple',
+    borderColor: 'rgba(128,0,128, 1)',
     backgroundColor: 'white',
   },
   text: {
     fontSize: 21,
     color: 'white',
-    borderRadius: 10,
-    borderWidth: 3,
+
+    width: '95%',
+    // backgroundColor: 'red',
+
     borderColor: 'white',
     letterSpacing: 3,
-    marginTop: 50,
-    padding: 4,
-    marginRight: 38,
+
+    paddingTop: 20,
+
   },
   text2: {
     fontSize: 21,
-    padding: 4,
+
     color: 'white',
-    borderRadius: 10,
-    borderWidth: 3,
+
+    width: '95%',
+
     borderColor: 'white',
-    letterSpacing: 1,
-    marginRight: 39,
-    marginTop: 30,
+    letterSpacing: 3,
+    paddingLeft: 10,
+
+    paddingTop: 20,
+    // backgroundColor: 'red'
+
   },
   btn: {
-    marginTop: 140,
-    marginBottom: 60,
+    width: '100%',
     borderColor: 'white',
     borderWidth: 3,
   },

@@ -4,20 +4,20 @@ import {
   Image,
   SafeAreaView,
   StyleSheet,
-  KeyboardAvoidingView,
   TouchableOpacity,
-  ActivityIndicator,
-  Modal,
+  ScrollView,
 } from 'react-native';
 import React, { useState } from 'react';
 import { TextInput, Button } from 'react-native-paper';
 import { launchImageLibrary } from 'react-native-image-picker';
 import storage from '@react-native-firebase/storage';
 import auth from '@react-native-firebase/auth';
-import KeyboardAvoidingWrapper from './KeyboardAvoidingWrapper';
+
 import firestore from '@react-native-firebase/firestore';
 import Loader from '../components/Loader/Loader';
 import messaging from '@react-native-firebase/messaging';
+import IMAGE_PATHS from '../utility/ImagePaths';
+import Snackbar from 'react-native-snackbar';
 
 export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -36,7 +36,11 @@ export default function SignUpScreen({ navigation }) {
     setLoading(true);
     if (!email || !password || !image || !name) {
       setLoading(false);
-      alert('please add all the fields');
+      Snackbar.show({
+        text: 'Required to fill all the fields',
+        duration: Snackbar.LENGTH_SHORT,
+        backgroundColor: 'purple'
+      });
       return;
     }
     try {
@@ -59,8 +63,12 @@ export default function SignUpScreen({ navigation }) {
         });
 
       setLoading(false);
-    } catch (err) {
-      alert('something went wrong');
+    } catch (error) {
+      Snackbar.show({
+        text: 'Something went wrong',
+        duration: Snackbar.LENGTH_SHORT,
+        backgroundColor: 'purple'
+      });
     }
   };
 
@@ -102,105 +110,95 @@ export default function SignUpScreen({ navigation }) {
   //////////////////////////////////////////////end///////////////////////////////////////////////
   return (
     <>
-      <KeyboardAvoidingWrapper>
-        <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-          <KeyboardAvoidingView behavior="position">
-            <View style={styles.box1}>
-              <Text style={styles.text}>Signup Here!</Text>
-              <Image
-                style={styles.img}
-                source={require('../assets/logo.jpeg')}></Image>
-            </View>
-            <View style={styles.box2}>
-              {!showNext && (
-                <>
-                  <TextInput
-                    label={'Email'}
-                    value={email}
-                    mode="outlined"
-                    onChangeText={text => setEmail(text)}>
-                  </TextInput>
 
-                  <TextInput
-                    label={'Password'}
-                    value={password}
-                    secureTextEntry={passwordVisible}
-                    mode="outlined"
-                    right={
-                      <TextInput.Icon
-                        name={passwordVisible ? 'eye' : 'eye-off'}
-                        onPress={() => setPasswordVisible(!passwordVisible)}
-                      />
-                    }
-                    onChangeText={text => setPassword(text)}></TextInput>
-                </>
-              )}
-              {showNext ? (
-                <>
-                  <TextInput
-                    label={'Name'}
-                    value={name}
-                    mode="outlined"
-                    onChangeText={text => setName(text)}></TextInput>
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+        <ScrollView scrollEnabled={false}>
+          <View style={styles.headerView}>
+            <Text style={styles.headerText}>Signup Here!</Text>
+            <Image
+              style={styles.logo}
+              source={IMAGE_PATHS.Logo}></Image>
+          </View>
+          <View style={styles.mainContainer}>
+            {!showNext && (
+              <>
+                <TextInput
+                  label={'Email'}
+                  value={email}
+                  mode="outlined"
+                  onChangeText={text => setEmail(text)}>
+                </TextInput>
 
-                  <Button mode="contained" onPress={() => pickImageAndUpload()}>
-                    Select profile pic
-                  </Button>
-                  <Button
-                    mode="contained"
-                    disabled={image ? false : true}
-                    onPress={() => {
-                      userSignup();
-                    }}>
-                    SignUp
-                  </Button>
-                </>
-              ) : (
-                <Button mode="contained" onPress={() => setShowNext(true)}>
-                  Next
+                <TextInput
+                  label={'Password'}
+                  value={password}
+                  secureTextEntry={passwordVisible}
+                  mode="outlined"
+                  right={
+                    <TextInput.Icon
+                      name={passwordVisible ? 'eye' : 'eye-off'}
+                      onPress={() => setPasswordVisible(!passwordVisible)}
+                    />
+                  }
+                  onChangeText={text => setPassword(text)}></TextInput>
+              </>
+            )}
+            {showNext ? (
+              <>
+                <TextInput
+                  label={'Name'}
+                  value={name}
+                  mode="outlined"
+                  onChangeText={text => setName(text)}></TextInput>
+
+                <Button mode="contained" onPress={() => pickImageAndUpload()}>
+                  Select profile pic
                 </Button>
-              )}
-              <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Text style={styles.footerText}>Already have an account ?</Text>
-              </TouchableOpacity>
-            </View>
-          </KeyboardAvoidingView>
+                <Button
+                  mode="contained"
+                  disabled={image ? false : true}
+                  onPress={() => {
+                    userSignup();
+                  }}>
+                  SignUp
+                </Button>
+              </>
+            ) : (
+              <Button mode="contained" onPress={() => setShowNext(true)}>
+                Next
+              </Button>
+            )}
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <Text style={styles.footerText}>Already have an account ?</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
 
-        </SafeAreaView>
-      </KeyboardAvoidingWrapper>
+      </SafeAreaView>
+
       <Loader loading={loading} />
     </>
   );
 }
 const styles = StyleSheet.create({
-  text: {
+  headerText: {
     fontSize: 22,
     color: 'purple',
     margin: 10,
   },
-  img: {
+  logo: {
     width: 200,
     height: 200,
   },
-  box1: {
+  headerView: {
     alignItems: 'center',
   },
-  box2: {
+  mainContainer: {
     paddingHorizontal: 40,
     justifyContent: 'space-evenly',
     height: '50%',
   },
   footerText: {
     textAlign: 'center',
-  },
-  container: {
-    position: 'absolute',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

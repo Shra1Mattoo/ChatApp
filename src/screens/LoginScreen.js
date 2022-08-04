@@ -4,17 +4,17 @@ import {
   Image,
   SafeAreaView,
   StyleSheet,
-  KeyboardAvoidingView,
   TouchableOpacity,
-  ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 
 import React, { useState } from 'react';
 import { TextInput, Button } from 'react-native-paper';
 
 import auth from '@react-native-firebase/auth';
-import KeyboardAvoidingWrapper from './KeyboardAvoidingWrapper';
 import Loader from '../components/Loader/Loader';
+import IMAGE_PATHS from '../utility/ImagePaths';
+import Snackbar from 'react-native-snackbar';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -28,9 +28,12 @@ export default function LoginScreen({ navigation }) {
   const userLogin = async () => {
     setLoading(true);
     if (!email || !password) {
-      alert('please add all the fields');
+      Snackbar.show({
+        text: 'Required to fill all the fields',
+        duration: Snackbar.LENGTH_SHORT,
+        backgroundColor: 'purple'
+      });
       setLoading(false);
-      navigation.navigate(Login);
       return;
     }
     try {
@@ -38,76 +41,80 @@ export default function LoginScreen({ navigation }) {
 
       setLoading(false);
     } catch (err) {
-      alert('something went wrong');
+      Snackbar.show({
+        text: "Something went wrong",
+        backgroundColor: 'purple',
+        duration: Snackbar.LENGTH_SHORT,
+      });
       setLoading(false);
-      navigation.navigate(Login);
+
     }
   };
 
   return (<>
-    <KeyboardAvoidingWrapper>
-      <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-        <KeyboardAvoidingView behavior="position">
 
-          <View style={styles.box1}>
-            <Text style={styles.text}>Welcome to ChatApp</Text>
-            <Image
-              style={styles.img}
-              source={require('../assets/logo.jpeg')}></Image>
-          </View>
-          <View style={styles.box2}>
-            <TextInput
-              label={'Email'}
-              value={email}
-              mode="outlined"
-              onChangeText={text => setEmail(text)}></TextInput>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      <ScrollView scrollEnabled={false}>
 
-            <TextInput
-              label={'Password'}
-              value={password}
-              secureTextEntry={passwordVisible}
-              mode="outlined"
-              right={
-                <TextInput.Icon
-                  name={passwordVisible ? 'eye' : 'eye-off'}
-                  onPress={() => setPasswordVisible(!passwordVisible)}
-                />
-              }
-              onChangeText={text => setPassword(text)}></TextInput>
+        <View style={styles.headerView}>
+          <Text style={styles.headerText}>Welcome to ChatApp</Text>
+          <Image
+            style={styles.logo}
+            source={IMAGE_PATHS.Logo}></Image>
+        </View>
+        <View style={styles.mainContainer}>
+          <TextInput
+            label={'Email'}
+            value={email}
+            mode="outlined"
+            onChangeText={text => setEmail(text)}></TextInput>
 
-            <Button
-              mode="contained"
-              onPress={() => {
-                userLogin();
-              }}>
-              Login
-            </Button>
-            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-              <Text style={styles.footerText}>Don't have an account ?</Text>
-            </TouchableOpacity>
-          </View>
+          <TextInput
+            label={'Password'}
+            value={password}
+            secureTextEntry={passwordVisible}
+            mode="outlined"
+            right={
+              <TextInput.Icon
+                name={passwordVisible ? 'eye' : 'eye-off'}
+                onPress={() => setPasswordVisible(!passwordVisible)}
+              />
+            }
+            onChangeText={text => setPassword(text)}></TextInput>
 
-        </KeyboardAvoidingView>
-      </SafeAreaView>
-    </KeyboardAvoidingWrapper>
+          <Button
+            mode="contained"
+            onPress={() => {
+              userLogin();
+            }}>
+            Login
+          </Button>
+          <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+            <Text style={styles.footerText}>Don't have an account ?</Text>
+          </TouchableOpacity>
+        </View>
+
+      </ScrollView>
+    </SafeAreaView>
+
     <Loader loading={loading} />
   </>
   );
 }
 const styles = StyleSheet.create({
-  text: {
+  headerText: {
     fontSize: 22,
     color: 'purple',
     margin: 10,
   },
-  img: {
+  logo: {
     width: 200,
     height: 200,
   },
-  box1: {
+  headerView: {
     alignItems: 'center',
   },
-  box2: {
+  mainContainer: {
     paddingHorizontal: 40,
     justifyContent: 'space-evenly',
     height: '50%',
@@ -115,9 +122,5 @@ const styles = StyleSheet.create({
   footerText: {
     textAlign: 'center',
   },
-  AI: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+
 });
