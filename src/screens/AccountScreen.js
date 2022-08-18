@@ -13,6 +13,9 @@ import { Button } from 'react-native-paper';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import * as Animatable from 'react-native-animatable';
+import COLORS from '../theme/Colors';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { heightPercentageToDP } from 'react-native-responsive-screen';
 
 export default function AccountScreen({ user }) {
   const [profile, setProfile] = useState('');
@@ -34,13 +37,15 @@ export default function AccountScreen({ user }) {
   }
 
   return (
-    <ScrollView scrollEnabled={false}>
+
+
+    <ScrollView style={{ height: heightPercentageToDP(100), backgroundColor: COLORS.White }} scrollEnabled={false} >
       <View style={styles.container}>
 
         <Image style={styles.img} source={{ uri: profile.pic }} />
       </View>
       <Animatable.View animation="fadeIn" style={styles.container2}>
-        <View style={{ borderRadius: 10, paddingHorizontal: '4%', borderColor: 'white', borderWidth: 3, alignContent: 'center', height: '20%', flexDirection: 'row' }}>
+        <View style={{ borderRadius: 10, paddingHorizontal: '4%', borderColor: 'white', borderWidth: 3, alignContent: 'center', height: heightPercentageToDP(8), flexDirection: 'row' }}>
           <Feather
             name="user"
             size={30}
@@ -50,7 +55,7 @@ export default function AccountScreen({ user }) {
           <Text style={styles.text}> Name:{profile.name}</Text>
         </View>
         <View style={{ height: '1%' }}></View>
-        <View style={{ width: '100%', paddingHorizontal: '4%', borderRadius: 10, borderColor: 'white', borderWidth: 3, alignContent: 'center', height: '20%', flexDirection: 'row' }}>
+        <View style={{ width: '100%', paddingHorizontal: '4%', borderRadius: 10, borderColor: 'white', borderWidth: 3, alignContent: 'center', height: heightPercentageToDP(8), flexDirection: 'row' }}>
           <Feather
             name="mail"
             size={30}
@@ -61,7 +66,9 @@ export default function AccountScreen({ user }) {
             {profile.email}
           </Text>
         </View>
-        <View style={{ height: '20%' }}></View>
+        <View style={{ height: heightPercentageToDP(8) }}>
+
+        </View>
 
         <Button
           style={styles.btn}
@@ -80,26 +87,22 @@ export default function AccountScreen({ user }) {
           Logout
         </Button>
 
-      </Animatable.View>
-
+      </Animatable.View >
     </ScrollView >
+
+
+
   );
 }
 const styles = StyleSheet.create({
-  AI: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+
   container: {
-
+    height: heightPercentageToDP(43),
     alignItems: 'center',
-
-
   },
   container2: {
     borderRadius: 20,
-    height: '80%',
+    height: heightPercentageToDP(40),
     paddingHorizontal: '1%',
     justifyContent: 'center',
     backgroundColor: 'rgba(128,0,128, 0.6)',
@@ -116,7 +119,7 @@ const styles = StyleSheet.create({
   },
   img: {
     marginTop: 10,
-    marginBottom: 10,
+
     width: 300,
     height: 300,
     borderRadius: 150,

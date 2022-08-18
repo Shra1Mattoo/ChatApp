@@ -10,6 +10,7 @@ import React, { useState, useEffect } from 'react';
 import firestore from '@react-native-firebase/firestore';
 
 import { FAB } from 'react-native-paper';
+import COLORS from '../theme/Colors';
 
 export default function HomeScreen({ user, navigation }) {
   const [users, setUsers] = useState(null);
@@ -74,6 +75,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 18,
+    color: COLORS.Black,
     marginLeft: 15,
   },
   mycard: {

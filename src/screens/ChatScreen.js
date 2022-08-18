@@ -6,13 +6,14 @@ import { GiftedChat, Bubble, InputToolbar } from 'react-native-gifted-chat';
 import firestore from '@react-native-firebase/firestore';
 import { launchImageLibrary } from 'react-native-image-picker';
 import storage from '@react-native-firebase/storage';
+import Snackbar from 'react-native-snackbar';
 import ImgToBase64 from 'react-native-image-base64';
 
 export default function ChatScreen({ user, route }) {
   const [messages, setMessages] = useState([]);
   const { uid } = route.params;
   const [profile, setProfile] = useState('');
-  const [image, setImage] = useState('');
+
 
 
   useEffect(() => {
@@ -71,17 +72,23 @@ export default function ChatScreen({ user, route }) {
   const onSend = messageArray => {
     sendNoti();
 
+    // console.warn("HMMMMM check", messageArray)
+
     const msg = messageArray[0];
     console.log("My message", messageArray)
 
     const mymsg = {
-      ...msg,
+      user: {
+        _id: user.uid,
+      },
+      text: msg.text,
       sentBy: user.uid,
       sentTo: uid,
       createdAt: new Date(),
 
     };
     setMessages(previousMessages => GiftedChat.append(previousMessages, mymsg));
+
     const docid = uid > user.uid ? user.uid + '-' + uid : uid + '-' + user.uid;
 
     firestore()
@@ -90,24 +97,26 @@ export default function ChatScreen({ user, route }) {
       .collection('messages')
       .add({ ...mymsg, createdAt: firestore.FieldValue.serverTimestamp() });
   };
-  const imageSender = messageArray => {
-    sendNoti();
-    const msg = messageArray[0];
-    const mymsg = {
-      ...msg,
-      sentBy: user.uid,
-      sentTo: uid,
-      createdAt: new Date(),
-    };
-    setMessages(previousMessages => GiftedChat.append(previousMessages, mymsg, source));
-    const docid = uid > user.uid ? user.uid + '-' + uid : uid + '-' + user.uid;
 
-    firestore()
-      .collection('chatrooms')
-      .doc(docid)
-      .collection('messages')
-      .add({ ...mymsg, createdAt: firestore.FieldValue.serverTimestamp() });
-  };
+  // const imageSender = messageArray => {
+  //   sendNoti();
+  //   const msg = messageArray[0];
+  //   const mymsg = {
+  //     ...msg,
+  //     sentBy: user.uid,
+  //     sentTo: uid,
+  //     createdAt: new Date(),
+  //   };
+  //   setMessages(previousMessages => GiftedChat.append(previousMessages, mymsg, source));
+  //   const docid = uid > user.uid ? user.uid + '-' + uid : uid + '-' + user.uid;
+
+  //   firestore()
+  //     .collection('chatrooms')
+  //     .doc(docid)
+  //     .collection('messages')
+  //     .add({ ...mymsg, createdAt: firestore.FieldValue.serverTimestamp() });
+  // };
+
   const sendNoti = () => {
     firestore()
       .collection('usertoken')
@@ -133,53 +142,78 @@ export default function ChatScreen({ user, route }) {
   /////////////////open gallery/////////////
   const openGallery = () => {
     launchImageLibrary('photo', response => {
-      console.warn("On open gallery ", response)
-      ImgToBase64.getBase64String(response.assets[0].uri)
-        .then(async base64String => {
-
-          let source = 'data:image/jpeg;base64,' + base64String;
-          const msg = source;
-          const mymsg = {
-            ...msg,
-            sentBy: user.uid,
-            sentTo: uid,
-            createdAt: new Date(),
-          };
-          setMessages(previousMessages => GiftedChat.append(previousMessages, mymsg, source));
-          const docid = uid > user.uid ? user.uid + '-' + uid : uid + '-' + user.uid;
-
-          firestore()
-            .collection('chatrooms')
-            .doc(docid)
-            .collection('messages')
-            .add({ ...mymsg, createdAt: firestore.FieldValue.serverTimestamp() });
-
-
-        });
-    });
-  };
-
-  ///////////////////////////////////Photo-Upload-Libraray//////////////////////////////
-
-  const pickImageAndUpload = () => {
-    ImagePicker.showImagePicker(options, (response) => {
-      console.log('Response = ', response);
-
       if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-        Alert.alert(response.customButton);
+
+
+        Snackbar.show({
+          text: 'Image not selected',
+          duration: Snackbar.LENGTH_SHORT,
+          backgroundColor: 'purple'
+        });
+      }
+      if (response) {
+
+        // console.warn("On open gallery ", response)
+
+        ImgToBase64.getBase64String(response.assets[0].uri)
+          .then(async base64String => {
+
+            // let source = 'data:image/jpeg;base64,' + base64String;
+            const image = response.assets[0].uri;
+
+            const imagesent = {
+              user: {
+                _id: user.uid,
+              },
+              image: image,
+              sentBy: user.uid,
+              sentTo: uid,
+              createdAt: new Date(),
+            };
+            setMessages(lastMessages => GiftedChat.append(lastMessages, imagesent));
+            const docid = uid > user.uid ? user.uid + '-' + uid : uid + '-' + user.uid;
+
+            firestore()
+              .collection('chatrooms')
+              .doc(docid)
+              .collection('messages')
+              .add({ ...imagesent, createdAt: firestore.FieldValue.serverTimestamp() })
+
+
+
+          });
       } else {
-        // You can also display the image using data:
-        // const source = { uri: 'data:image/jpeg;base64,' + response.data };
-        setImageSource(response.uri);
+        Snackbar.show({
+          text: 'Something went wrong',
+          duration: Snackbar.LENGTH_SHORT,
+          backgroundColor: 'purple'
+        });
       }
     });
 
   };
+
+  // ///////////////////////////////////Photo-Upload-Libraray//////////////////////////////
+
+  // const pickImageAndUpload = () => {
+  //   ImagePicker.showImagePicker(options, (response) => {
+  //     console.log('Response = ', response);
+
+  //     if (response.didCancel) {
+  //       console.log('User cancelled image picker');
+  //     } else if (response.error) {
+  //       console.log('ImagePicker Error: ', response.error);
+  //     } else if (response.customButton) {
+  //       console.log('User tapped custom button: ', response.customButton);
+  //       Alert.alert(response.customButton);
+  //     } else {
+  //       // You can also display the image using data:
+  //       // const source = { uri: 'data:image/jpeg;base64,' + response.data };
+  //       setImageSource(response.uri);
+  //     }
+  //   });
+
+  // };
 
   return (
     <View style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
@@ -201,9 +235,9 @@ export default function ChatScreen({ user, route }) {
       <GiftedChat
         messages={messages}
         // showAvatarForEveryMessage={true}
-        showUserAvatar={true}
-        isTyping={true}
-        alwaysShowSend={true}
+        // showUserAvatar={true}
+        isTyping
+
         onSend={text => onSend(text)}
         user={{
           _id: user.uid,
@@ -224,13 +258,16 @@ export default function ChatScreen({ user, route }) {
                   right: 35,
                 },
               }}
+
             />
           );
         }}
         renderInputToolbar={props => {
+
           return (
             <InputToolbar
               {...props}
+
               containerStyle={{ borderTopWidth: 1, borderTopColor: 'purple' }}
               textInputStyle={{ color: 'black' }}
               onPressActionButton={() => openGallery()}

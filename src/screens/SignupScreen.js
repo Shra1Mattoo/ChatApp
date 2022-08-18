@@ -18,6 +18,8 @@ import Loader from '../components/Loader/Loader';
 import messaging from '@react-native-firebase/messaging';
 import IMAGE_PATHS from '../utility/ImagePaths';
 import Snackbar from 'react-native-snackbar';
+import COLORS from '../theme/Colors';
+import { heightPercentageToDP } from 'react-native-responsive-screen';
 
 export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -76,6 +78,14 @@ export default function SignUpScreen({ navigation }) {
 
   const pickImageAndUpload = () => {
     launchImageLibrary({ quality: 0.5 }, fileobj => {
+      // fileobj.didCancel(
+
+      //   Snackbar.show({
+      //     text: 'upload cancel',
+      //     duration: Snackbar.LENGTH_SHORT,
+      //     backgroundColor: 'purple'
+      //   })
+      // )
       // console.log(fileobj);
       setLoading(true)
       const uploadTask = storage()
@@ -111,70 +121,70 @@ export default function SignUpScreen({ navigation }) {
   return (
     <>
 
-      <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-        <ScrollView scrollEnabled={false}>
-          <View style={styles.headerView}>
-            <Text style={styles.headerText}>Signup Here!</Text>
-            <Image
-              style={styles.logo}
-              source={IMAGE_PATHS.Logo}></Image>
-          </View>
-          <View style={styles.mainContainer}>
-            {!showNext && (
-              <>
-                <TextInput
-                  label={'Email'}
-                  value={email}
-                  mode="outlined"
-                  onChangeText={text => setEmail(text)}>
-                </TextInput>
 
-                <TextInput
-                  label={'Password'}
-                  value={password}
-                  secureTextEntry={passwordVisible}
-                  mode="outlined"
-                  right={
-                    <TextInput.Icon
-                      name={passwordVisible ? 'eye' : 'eye-off'}
-                      onPress={() => setPasswordVisible(!passwordVisible)}
-                    />
-                  }
-                  onChangeText={text => setPassword(text)}></TextInput>
-              </>
-            )}
-            {showNext ? (
-              <>
-                <TextInput
-                  label={'Name'}
-                  value={name}
-                  mode="outlined"
-                  onChangeText={text => setName(text)}></TextInput>
+      <ScrollView style={{ height: '100%', backgroundColor: COLORS.White }} scrollEnabled={false}>
+        <View style={styles.headerView}>
+          <Text style={styles.headerText}>Signup Here!</Text>
+          <Image
+            style={styles.logo}
+            source={IMAGE_PATHS.Logo}></Image>
+        </View>
+        <View style={styles.mainContainer}>
+          {!showNext && (
+            <>
+              <TextInput
+                label={'Email'}
+                value={email}
+                mode="outlined"
+                onChangeText={text => setEmail(text)}>
+              </TextInput>
 
-                <Button mode="contained" onPress={() => pickImageAndUpload()}>
-                  Select profile pic
-                </Button>
-                <Button
-                  mode="contained"
-                  disabled={image ? false : true}
-                  onPress={() => {
-                    userSignup();
-                  }}>
-                  SignUp
-                </Button>
-              </>
-            ) : (
-              <Button mode="contained" onPress={() => setShowNext(true)}>
-                Next
+              <TextInput
+                label={'Password'}
+                value={password}
+                secureTextEntry={passwordVisible}
+                mode="outlined"
+                right={
+                  <TextInput.Icon
+                    name={passwordVisible ? 'eye' : 'eye-off'}
+                    onPress={() => setPasswordVisible(!passwordVisible)}
+                  />
+                }
+                onChangeText={text => setPassword(text)}></TextInput>
+            </>
+          )}
+          {showNext ? (
+            <>
+              <TextInput
+                label={'Name'}
+                value={name}
+                mode="outlined"
+                onChangeText={text => setName(text)}></TextInput>
+
+              <Button mode="contained" onPress={() => pickImageAndUpload()}>
+                Select profile pic
               </Button>
-            )}
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Text style={styles.footerText}>Already have an account ?</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+              <Button
+                mode="contained"
+                disabled={image ? false : true}
+                onPress={() => {
+                  userSignup();
+                }}>
+                SignUp
+              </Button>
+            </>
+          ) : (
+            <Button mode="contained" onPress={() => setShowNext(true)}>
+              Next
+            </Button>
+          )}
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Text style={styles.footerText}>Already have an account ?</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
 
-      </SafeAreaView>
+
 
       <Loader loading={loading} />
     </>
@@ -196,9 +206,11 @@ const styles = StyleSheet.create({
   mainContainer: {
     paddingHorizontal: 40,
     justifyContent: 'space-evenly',
-    height: '50%',
+    height: heightPercentageToDP(30),
   },
   footerText: {
+    // height: heightPercentageoDP(35),
     textAlign: 'center',
+    color: COLORS.Black,
   },
 });

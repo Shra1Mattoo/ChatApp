@@ -15,6 +15,8 @@ import auth from '@react-native-firebase/auth';
 import Loader from '../components/Loader/Loader';
 import IMAGE_PATHS from '../utility/ImagePaths';
 import Snackbar from 'react-native-snackbar';
+import COLORS from '../theme/Colors';
+import { heightPercentageToDP } from 'react-native-responsive-screen';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -53,49 +55,50 @@ export default function LoginScreen({ navigation }) {
 
   return (<>
 
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-      <ScrollView scrollEnabled={false}>
+    <ScrollView style={{ height: '100%', backgroundColor: COLORS.White }} scrollEnabled={false}>
 
-        <View style={styles.headerView}>
-          <Text style={styles.headerText}>Welcome to ChatApp</Text>
-          <Image
-            style={styles.logo}
-            source={IMAGE_PATHS.Logo}></Image>
-        </View>
-        <View style={styles.mainContainer}>
-          <TextInput
-            label={'Email'}
-            value={email}
-            mode="outlined"
-            onChangeText={text => setEmail(text)}></TextInput>
 
-          <TextInput
-            label={'Password'}
-            value={password}
-            secureTextEntry={passwordVisible}
-            mode="outlined"
-            right={
-              <TextInput.Icon
-                name={passwordVisible ? 'eye' : 'eye-off'}
-                onPress={() => setPasswordVisible(!passwordVisible)}
-              />
-            }
-            onChangeText={text => setPassword(text)}></TextInput>
+      <View style={styles.headerView}>
+        <Text style={styles.headerText}>Welcome to ChatApp</Text>
+        <Image
+          style={styles.logo}
+          source={IMAGE_PATHS.Logo}></Image>
+      </View>
+      <View style={styles.mainContainer}>
+        <TextInput
+          label={'Email'}
+          value={email}
+          mode="outlined"
+          onChangeText={text => setEmail(text)}></TextInput>
 
-          <Button
-            mode="contained"
-            onPress={() => {
-              userLogin();
-            }}>
-            Login
-          </Button>
-          <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-            <Text style={styles.footerText}>Don't have an account ?</Text>
-          </TouchableOpacity>
-        </View>
+        <TextInput
+          label={'Password'}
+          value={password}
+          secureTextEntry={passwordVisible}
+          mode="outlined"
+          right={
+            <TextInput.Icon
+              name={passwordVisible ? 'eye' : 'eye-off'}
+              onPress={() => setPasswordVisible(!passwordVisible)}
+            />
+          }
+          onChangeText={text => setPassword(text)}></TextInput>
 
-      </ScrollView>
-    </SafeAreaView>
+        <Button
+          mode="contained"
+          onPress={() => {
+            userLogin();
+          }}>
+          Login
+        </Button>
+
+        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+          <Text style={styles.footerText}>Don't have an account ?</Text>
+        </TouchableOpacity>
+      </View>
+
+
+    </ScrollView>
 
     <Loader loading={loading} />
   </>
@@ -117,10 +120,13 @@ const styles = StyleSheet.create({
   mainContainer: {
     paddingHorizontal: 40,
     justifyContent: 'space-evenly',
-    height: '50%',
+    height: heightPercentageToDP(30),
   },
   footerText: {
+    // height: heightPercentageToDP(11),
     textAlign: 'center',
+    color: COLORS.Black,
+    // backgroundColor: "red"
   },
 
 });
